@@ -1,5 +1,4 @@
-﻿// vite.config.js
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
@@ -7,10 +6,11 @@ export default defineConfig({
   preview: {
     allowedHosts: true, // Hoặc ['mern-frontend-235191.onrender.com']
     host: true,
-    port: 4173
+    port: 5173,
   },
   server: {
     allowedHosts: true,
-    host: true
-  }
+    host: true,
+    port: 5173,
+  },
 })

@@ -1,16 +1,44 @@
-﻿version: '3.8'
-
+﻿# Chạy toàn bộ stack local (MongoDB + backend + frontend):
+#   docker compose up --build
+# Frontend: http://localhost:5173   Backend: http://localhost:5000
 services:
+  mongo:
+    image: mongo:7
+    container_name: mern-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: ./server
     container_name: mern-backend
+    restart: unless-stopped
     ports:
       - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo:27017/cloud_lab
+      CLIENT_URL: http://localhost:5173,https://miniature-space-computing-4j57xq4x664qc7x4v-5173.app.github.dev
+    depends_on:
+      mongo:
+        condition: service_healthy
 
   frontend:
-    build: ./client
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: https://miniature-space-computing-4j57xq4x664qc7x4v-5000.app.github.dev
     container_name: mern-frontend
+    restart: unless-stopped
     ports:
       - "5173:5173"
     depends_on:
       - backend
+
+volumes:
+  mongo-data:
